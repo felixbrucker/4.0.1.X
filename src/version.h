@@ -9,7 +9,7 @@
  * network protocol versioning
  */
 
-static const int PROTOCOL_VERSION = 99018;
+static const int PROTOCOL_VERSION = 99022;
 
 //! initial proto version, to be increased after version/verack negotiation
 static const int INIT_PROTO_VERSION = 99008;
@@ -18,10 +18,10 @@ static const int INIT_PROTO_VERSION = 99008;
 static const int GETHEADERS_VERSION = 99013;
 
 //! disconnect from peers older than this proto version
-static const int MIN_PEER_PROTO_VERSION = 99008;
+static const int MIN_PEER_PROTO_VERSION = 99017;
 
 //! disconnect from all older peers after Xnode payment HF
-static const int MIN_PEER_PROTO_VERSION_AFTER_XNODE_PAYMENT_HF = 99017;
+static const int MIN_PEER_PROTO_VERSION_AFTER_XNODE_PAYMENT_HF = 99021;
 
 //! nTime field added to CAddress, starting with this version;
 //! if possible, avoid requesting addres99011ses nodes older than this
@@ -46,6 +46,6 @@ static const int FEEFILTER_VERSION = 99013;
 static const int SHORT_IDS_BLOCKS_VERSION = 99013;
 
 //! not banning for invalid compact blocks starts with this version
-static const int INVALID_CB_NO_BAN_VERSION = 99008;
+static const int INVALID_CB_NO_BAN_VERSION = 99021;
 
 #endif // BITCOIN_VERSION_H

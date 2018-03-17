@@ -1421,7 +1421,7 @@ bool CheckTransaction(const CTransaction &tx, CValidationState &state, uint256 h
                                  "CTransaction::CheckTransaction() : founders reward missing");
             }
 
-            if (total_payment_tx > 1)
+            if (total_payment_tx > 2)
 			{
                 return state.DoS(100, false, REJECT_INVALID_XNODE_PAYMENT,
                                  "CTransaction::CheckTransaction() : invalid xnode payment");

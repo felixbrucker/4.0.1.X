@@ -1,83 +1,129 @@
-Xnode Build Instructions and Notes
+Xnode Instructions and Notes
 =============================
- - Version 0.1.6
- - Date: 14 December 2017
+ - Version 0.1.7
+ - Date: 6 March 2018
 
 Prerequisites
 -------------
  - Ubuntu 16.04+
- - Libraries to build from hexxcoin source
- - Port **8168** is open
+ - Port **29100** is open
+ - Libraries to build from hexxcoin source if you want to build it yourself
 
-Step 1. Build
+Step 0. ON VPS: Acquire the binaries
 ----------------------
-**1.1.**  Check out from source:
 
-    git clone https://github.com/hexxcointakeove/hexxcoin
+Either
 
-**1.2.**  See [README.md](README.md) for instructions on building.
+<details open>
+<summary><strong>Download the prebuilt binaries</strong></summary>
+<strong>0.1</strong> Install prebuild client and full chain
 
-Step 2. (Optional - only if firewall is running). Open port 8168
+	mkdir .hexxcoin
+	cd .hexxcoin
+	sudo apt-get install unzip
+	wget https://github.com/hexxcointakeover/hexxcoin/releases/download/17.3.2018/chainfiles.zip
+	unzip chainfiles.zip
+	cd ..
+	wget https://github.com/hexxcointakeover/hexxcoin/releases/download/4.0.3.0/linux-x64.zip
+	unzip linux-x64.zip
+	
+	./hexxcoind -daemon
+	./hexxcoin-cli getinfo
+</details>
+
+or
+
+<details>
+<summary><strong>Build from source</strong></summary>
+<strong>0.1.</strong>  Check out from source:
+
+    git clone https://github.com/hexxcointakeover/hexxcoin
+
+<strong>0.2.</strong>  See [README.md](README.md) for instructions on building.
+</details>
+	
+
+Step 1. ON VPS: Open port 29100 (Optional - only if firewall is running)
 ----------------------
-**2.1.**  Run:
+**1.1.**  Run:
 
-    sudo ufw allow 8168
+    sudo ufw allow ssh 
+    sudo ufw allow 29100
     sudo ufw default allow outgoing
     sudo ufw enable
 
-Step 3. First run on your Local Wallet
+Step 2. ON LOCAL MACHINE: First run on your Local Wallet
 ----------------------
-**3.0.**  Go to the checked out folder
 
-    cd hexxcoin
+<details open>
+<summary><strong>If you are using the qt wallet</strong></summary>
+<strong>2.0.</strong>  Open the wallet
 
-**3.1.**  Start daemon in testnet mode:
+<strong>2.1.</strong>  Click Help -> Debug window -> Console
 
-    ./src/hexxcoind -daemon -server -testnet
+<strong>2.2.</strong>  Generate xnodeprivkey:
 
-**3.2.**  Generate xnodeprivkey:
-
-    ./src/hexxcoin-cli xnode genkey
+    xnode genkey
 
 (Store this key)
 
-**3.3.**  Get wallet address:
+<strong>2.3.</strong>  Get wallet address:
 
-    ./src/hexxcoin-cli getaccountaddress 0
+    getaccountaddress XN1
 
-**3.4.**  Send to received address **exactly 1000 HXX** in **1 transaction**. Wait for 15 confirmations.
+<strong>2.4.</strong>  Send to received address <strong>exactly 2000 HXX</strong> in <strong>1 transaction</strong>. Wait for 15 confirmations.
 
-**3.5.**  Stop daemon:
+<strong>2.5.</strong>  Close the wallet
+</details>
 
-    ./src/hexxcoin-cli stop
+<details>
+<summary><strong>If you are using the daemon</strong></summary>
+<strong>2.0.</strong>  Go to the checked out folder or where you extracted the binaries
 
-Step 4. In your VPS where you are hosting your Xnode. Update config files
-----------------------
-**4.1.**  Create file **hexxcoin.conf** (in folder **~/.hexxcoin**)
+    cd hexxcoin/src
 
-    rpcuser=username
-    rpcpassword=password
-    rpcallowip=127.0.0.1
-    debug=1
-    txindex=1
-    daemon=1
-    server=1
-    listen=1
-    maxconnections=24
-    xnode=1
-    xnodeprivkey=XXXXXXXXXXXXXXXXX  ## Replace with your xnode private key
-    externalip=XXX.XXX.XXX.XXX:8168 ## Replace with your node external IP
+<strong>2.1.</strong>  Start daemon:
 
-**4.2.**  Create file **xnode.conf** (in 2 folders **~/.hexxcoin** and **~/.hexxcoin/testnet3**) contains the following info:
- - LABEL: A one word name you make up to call your node (ex. ZN1)
- - IP:PORT: Your xnode VPS's IP, and the port is always 18168.
+    ./hexxcoind -daemon -server
+
+<strong>2.2.</strong>  Generate xnodeprivkey:
+
+    ./hexxcoin-cli xnode genkey
+
+(Store this key)
+
+<strong>2.3.</strong>  Get wallet address:
+
+    ./hexxcoin-cli getaccountaddress XN1
+
+<strong>2.4.</strong>  Send to received address <strong>exactly 2000 HXX</strong> in <strong>1 transaction</strong>. Wait for 15 confirmations.
+
+<strong>2.5.</strong>  Stop daemon:
+
+    ./hexxcoin-cli stop
+</details>
+
+
+## For both:
+
+**2.6.**  Create file **xnode.conf** (in **~/.hexxcoin**, **C:\Users\USER\AppData\Roaming\hexxcoin** or **~/Library/Application Support/hexxcoin** depending on your Operating System) containing the following info:
+ - LABEL: A one word name you make up to call your node (ex. XN1)
+ - IP:PORT: Your xnode VPS's IP, and the port is always 29100.
  - XNODEPRIVKEY: This is the result of your "xnode genkey" from earlier.
- - TRANSACTION HASH: The collateral tx. hash from the 1000 HXX deposit.
- - INDEX: The Index is always 0 or 1.
+ - TRANSACTION HASH: The collateral tx. hash from the 2000 HXX deposit.
+ - INDEX: The Index from the transaction hash
 
 To get TRANSACTION HASH, run:
 
-    ./src/hexxcoin-cli xnode outputs
+```
+./hexxcoin-cli xnode outputs
+```
+or
+```
+xnode outputs
+```
+
+depending on your wallet/daemon setup.
 
 The output will look like:
 
@@ -85,20 +131,49 @@ The output will look like:
 
 Sample of xnode.conf:
 
-    ZN1 51.52.53.54:18168 XrxSr3fXpX3dZcU7CoiFuFWqeHYw83r28btCFfIHqf6zkMp1PZ4 d6fd38868bb8f9958e34d5155437d009b72dfd33fc28874c87fd42e51c0f74fdb 0
+    XN1 51.52.53.54:29100 XrxSr3fXpX3dZcU7CoiFuFWqeHYw83r28btCFfIHqf6zkMp1PZ4 d6fd38868bb8f9958e34d5155437d009b72dfd33fc28874c87fd42e51c0f74fdb 0
 
-Step 5. Run a xnode
+**2.7.** Lock unspent
+
+As long as the xnode is listed in your xnode.conf file the funds are automatically locked so you don't accidentially spend them.
+
+Step 3. ON VPS: Update config files
 ----------------------
-**5.1.**  Start xnode:
+**3.1.**  Create file **hexxcoin.conf** (in folder **~/.hexxcoin**)
 
-    ./src/hexxcoin-cli xnode start-alias <LABEL>
+    rpcuser=username
+    rpcpassword=password
+    rpcallowip=127.0.0.1
+    server=1
+    maxconnections=24
+    xnode=1
+    xnodeprivkey=XXXXXXXXXXXXXXXXX  ## Replace with your xnode private key
+    externalip=XXX.XXX.XXX.XXX ## Replace with your node external IP
+
+
+Step 4. ON LOCAL MACHINE: Start the xnode
+----------------------
+
+<details open>
+<summary><strong>With qt wallet</strong></summary>
+<strong>4.1</strong> Start the xnode via your gui wallet in the xnodes tab
+</details>
+
+<details>
+<summary><strong>With daemon</strong></summary>
+<strong>4.1</strong> Start xnode:
+
+    ./hexxcoin-cli xnode start-alias <LABEL>
 
 For example:
 
-    ./src/hexxcoin-cli xnode start-alias ZN1
+    ./hexxcoin-cli xnode start-alias XN1
 
-**5.2.**  To check node status:
+<strong>4.2</strong>  To check node status:
 
-    ./src/hexxcoin-cli xnode debug
+    ./hexxcoin-cli xnode debug
+
+</details>
+
 
 If not successfully started, just repeat start command
